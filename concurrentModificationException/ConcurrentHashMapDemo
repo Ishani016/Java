@@ -1,0 +1,47 @@
+import java.util.concurrent.ConcurrentHashMap;
+
+public class ConcurrentHashMapDemo {
+    static ConcurrentHashMap<Integer, String> map = new ConcurrentHashMap<>();
+
+    public void run() {
+        try {
+            System.out.println("Inside run");
+            Thread.sleep(1000);
+            map.put(400, "D");
+            System.out.println("Executed run");
+        } catch (InterruptedException e) {
+            System.out.println("Child class trying to add element");
+        }
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+        map.put(100, "A");
+        map.put(200, "B");
+        map.put(300, "C");
+        HashMapDemo t = new HashMapDemo();
+        t.start();
+
+        map.forEach((k,v) -> {
+            try {
+                System.out.println(k+"->"+v);
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        System.out.println("Executed for loop");
+    }
+}
+
+/*
+However, there is a subtlety in the behavior of the forEach method in this context.
+The forEach method of ConcurrentHashMap operates on the current state of the map at the time the method is invoked.
+If the child thread adds an entry to the map after the forEach loop has started, it might not be included in the iteration.
+
+In your case, the child thread starts after the main thread has already begun iterating over the entries using forEach.
+Therefore, the entry with key 400 added by the child thread may not be printed by the forEach loop,
+as the loop operates on the state of the map at the beginning of the loop.
+
+To ensure that the entry with key 400 is included in the iteration,
+you might want to introduce some synchronization or wait for the child thread to finish before starting the iteration.
+*/
