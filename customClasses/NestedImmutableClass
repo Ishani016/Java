@@ -1,0 +1,32 @@
+package lld.customClasses;
+
+public final class NestedImmutableClass {
+    private final String type;
+    private final String subtype;
+    private final AnotherImmutableClass innerClass;
+
+    public NestedImmutableClass(String type, String subtype, AnotherImmutableClass innerClass) {
+        this.type = type;
+        this.subtype = subtype;
+        this.innerClass = new AnotherImmutableClass(innerClass.getInnerField());
+    }
+
+    public AnotherImmutableClass getInnerClass() {
+        return new AnotherImmutableClass(innerClass.getInnerField());
+    }
+
+    public static final class AnotherImmutableClass {
+        private final String innerField;
+
+        // Inner immutable class
+        public AnotherImmutableClass(String innerField) {
+            this.innerField = innerField;
+        }
+
+        public String getInnerField() {
+            return innerField;
+        }
+
+        // No setter methods to maintain immutability
+    }
+}
